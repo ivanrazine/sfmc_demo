@@ -116,7 +116,7 @@
                     this.reqID = null
 
                 },
-                async performSingleRequest() {
+                async performSingleRequest(reqID) {
 
                     return await (await fetch("%%=RequestParameter('PAGEURL')=%%", { method: "POST", body: JSON.stringify({ reqID: reqID }) } )).json();
 

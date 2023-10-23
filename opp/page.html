@@ -42,7 +42,7 @@
             var results = req.Results;
 
             for (var k in results) {
-                res.push(scrumble(results[k].Name));
+                res.push(pseudomize(results[k].Name));
             }
 
             Write(Stringify({
@@ -64,12 +64,64 @@
 
     }
 
-    function scrumble(str) {
+    function pseudomize(str, sep) {
 
-        var res = str.split('');
+        var arr = [];
 
-        return res.sort(function(){return 0.5-Math.random()}).join('');
+        sep = sep || '';
 
+        if(sep.length > 0) {
+
+            arr = str.split(sep);
+
+            for(var k in arr) {
+
+                var tmp = [];
+
+                for(var i = 0; i < arr[k].length; i++) {
+                    tmp.push(arr[k].charAt(i));
+                }
+
+                tmp.sort(function() {
+                    return 0.5 - Math.random();
+                });
+
+                arr[k] = tmp.join('');
+
+            }
+
+        } else {
+
+            for(var i = 0; i < str.length; i++) {
+                arr.push(str.charAt(i));
+            }
+
+        }
+
+        arr = scramble(arr);
+
+        s = (sep.length > 0) ? arr.join(sep) : arr.join('');   
+                    
+        return s.toUpperCase();    
+
+    }
+
+    function scramble(arr) {
+
+        var counter = arr.length;
+
+        while (counter > 0) {
+
+            var index = Math.floor(Math.random() * counter);
+
+            counter--;
+
+            var temp = arr[counter];
+            arr[counter] = arr[index];
+            arr[index] = temp;
+        }
+
+        return arr;
     }
 
 </script>

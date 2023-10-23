@@ -66,7 +66,9 @@
 
     function scrumble(str) {
 
-        return str.split('');
+        var res = str.split('');
+
+        return res.sort(function(){return 0.5-Math.random()}).join('');
 
     }
 

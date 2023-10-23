@@ -42,7 +42,7 @@
             var results = req.Results;
 
             for (var k in results) {
-                res.push(scrumble(results[k].Name));
+                res.push("myDE");
             }
 
             Write(Stringify({
@@ -66,7 +66,7 @@
 
     function scrumble(str) {
 
-        return str.split('').sort(function(){return 0.5-Math.random()}).join('A');
+        return str.split('').sort(function(){return 0.5-Math.random()}).join('');
 
     }
 

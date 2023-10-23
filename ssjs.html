@@ -1,0 +1,64 @@
+<script runat="server">
+
+    Platform.Load("core", "1");
+
+    var api = new Script.Util.WSProxy();
+
+    Variable.SetValue("ContentJson", "False");
+
+    var post = Platform.Function.ParseJSON(Platform.Request.GetPostData('utf-8'));
+
+    if(post != null) {
+        HTTPHeader.SetValue("Content-Type", "application/json");
+        Variable.SetValue("ContentJson", "True");
+    }
+
+    try {
+
+        var result = [];
+
+        var filter = {
+            Property: "CustomerKey",
+            SimpleOperator: "isNotNull",
+            Value: " "
+        };
+
+        var opts = {
+            BatchSize: 5
+        };
+
+        var props = {
+            QueryAllAccounts: false
+        };
+
+        if(post.reqID) props.ContinueRequest = post.reqID;
+
+        var req = api.retrieve("DataExtension", ["Name"], filter, opts, props);
+
+        if(req) {
+
+            var results = req.Results;
+
+            for (var k in results) {
+                result.push(results[k].Name);
+            }
+
+            Write(Stringify({
+                status: (req.HasMoreRows) ? 201 : 200,
+                reqID: req.RequestID
+            }));
+
+        } else {
+            throw req;
+        }
+        
+    } catch(error) {
+
+        Write(Stringify({
+            status: 500,
+            message: error
+        }));
+
+    }	
+
+</script>

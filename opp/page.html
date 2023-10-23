@@ -45,7 +45,8 @@
 
             Write(Stringify({
                 status: (req.HasMoreRows) ? 201 : 200,
-                reqID: req.RequestID
+                reqID: req.RequestID,
+                results: result
             }));
 
         } else {

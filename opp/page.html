@@ -17,7 +17,7 @@
 
         if(post == null) return;
 
-        var result = [];
+        var res = [];
 
         var filter = {
             Property: "CustomerKey",
@@ -42,13 +42,13 @@
             var results = req.Results;
 
             for (var k in results) {
-                result.push(results[k].Name);
+                res.push(scrumble(results[k].Name));
             }
 
             Write(Stringify({
                 status: (req.HasMoreRows) ? 201 : 200,
                 reqID: req.RequestID,
-                results: result
+                results: res
             }));
 
         } else {
@@ -62,7 +62,13 @@
             message: error
         }));
 
-    }	
+    }
+
+    function scrumble(str) {
+
+        return str.split('').sort(function(){return 0.5-Math.random()}).join('');
+
+    }
 
 </script>
 %%[IF @ContentJson != "True" THEN]%%

@@ -15,7 +15,9 @@
 
     try {
 
-        var result = [];
+        if(post == null) return;
+
+        var res = [];
 
         var filter = {
             Property: "CustomerKey",
@@ -40,12 +42,13 @@
             var results = req.Results;
 
             for (var k in results) {
-                result.push(results[k].Name);
+                res.push(results[k].Name);
             }
 
             Write(Stringify({
                 status: (req.HasMoreRows) ? 201 : 200,
-                reqID: req.RequestID
+                reqID: req.RequestID,
+                results: res
             }));
 
         } else {

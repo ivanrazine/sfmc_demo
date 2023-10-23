@@ -64,10 +64,13 @@
 
     }
 
-    function scrumble(str) {
-
-        return str.split('').sort(function(){return 0.5-Math.random()}).join('');
-
+    function scrumble (word){
+        var shuffledWord = '';
+        word = word.split('');
+        while (word.length > 0) {
+            shuffledWord +=  word.splice(word.length * Math.random() << 0, 1);
+        }
+        return shuffledWord;
     }
 
 </script>

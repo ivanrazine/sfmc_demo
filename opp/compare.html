@@ -1,0 +1,123 @@
+<script runat="server">
+
+    Platform.Load("core", "1");
+
+    var api = new Script.Util.WSProxy();
+
+    Variable.SetValue("ContentJson", "False");
+
+    var post = Platform.Function.ParseJSON(Platform.Request.GetPostData("utf-8"));
+
+    if (post != null) {
+        HTTPHeader.SetValue("Content-Type", "application/json");
+        Variable.SetValue("ContentJson", "True");
+    }
+    try {
+        if (post == null) {
+            return;
+        }
+        var res = [];
+        var filter = {
+            Property: "CustomerKey",
+            SimpleOperator: "isNotNull",
+            Value: " "
+        };
+        var opts = {
+            BatchSize: 5,
+        };
+        var props = {
+            QueryAllAccounts: false,
+        };
+        if (post.reqID) {
+            props.ContinueRequest = post.reqID;
+        }
+        var req = api.retrieve("DataExtension", ["Name"], filter, opts, props);
+        Write(Stringify(req));
+        if (req) {
+            var results = req.Results;
+            for (var k in results) {
+                res.push(results[k].Name);
+            }
+            Write(
+                Stringify({
+                    status: req.HasMoreRows ? 201 : 200,
+                    reqID: req.RequestID,
+                    results: res
+                })
+            );
+        } else {
+            throw req;
+        }
+    } catch (error) {
+        Write(
+            Stringify({
+                status: 500,
+                message: error
+            })
+        );
+    }
+</script>
+
+%%[ IF @ContentJson != "True" THEN ]%%
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.1/dist/cdn.min.js" defer></script>
+    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+</head>
+
+<body>
+    <table x-data="myApp()">
+        <tr>
+            <th>Number</th>
+            <th>Name</th>
+        </tr>
+        <template x-for="(name, i) in results" :key="i">
+            <tr>
+                <td x-text="i"></td>
+                <td x-text="name"></td>
+            </tr>
+        </template>
+    </table>
+    <script>
+        function myApp() {
+            return {
+                status: 100,
+                results: [],
+                reqID: null,
+                init() {
+                    this.performRequests();
+                },
+                async performRequests() {
+                    while (this.status != 200) {
+                        let req = await this.performSingleRequest(this.reqID);
+                        if (req.status == 500) {
+                            break;
+                        }
+                        this.status = req.status;
+                        this.reqID = req.reqID;
+                        this.results = [...new Set([...this.results, ...req.results])];
+                    }
+                    this.reqID = null;
+                },
+                async performSingleRequest(reqID) {
+                    let response = await fetch("%%=RequestParameter('PAGEURL')=%%", {
+                        method: "POST",
+                        body: JSON.stringify({
+                            reqID: reqID
+                        })
+                    });
+
+                }
+            };
+        }
+    </script>
+</body>
+
+</html>
+%%[ENDIF]%%

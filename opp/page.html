@@ -8,14 +8,14 @@
 
     var post = Platform.Function.ParseJSON(Platform.Request.GetPostData('utf-8'));
 
-    if(post != null) {
+    if (post != null) {
         HTTPHeader.SetValue("Content-Type", "application/json");
         Variable.SetValue("ContentJson", "True");
     }
 
     try {
 
-        if(post == null) return;
+        if (post == null) return;
 
         var res = [];
 
@@ -33,11 +33,11 @@
             QueryAllAccounts: false
         };
 
-        if(post.reqID) props.ContinueRequest = post.reqID;
+        if (post.reqID) props.ContinueRequest = post.reqID;
 
         var req = api.retrieve("DataExtension", ["Name"], filter, opts, props);
 
-        if(req) {
+        if (req) {
 
             var results = req.Results;
 
@@ -54,8 +54,8 @@
         } else {
             throw req;
         }
-        
-    } catch(error) {
+
+    } catch (error) {
 
         Write(Stringify({
             status: 500,
@@ -70,19 +70,19 @@
 
         sep = sep || '';
 
-        if(sep.length > 0) {
+        if (sep.length > 0) {
 
             arr = str.split(sep);
 
-            for(var k in arr) {
+            for (var k in arr) {
 
                 var tmp = [];
 
-                for(var i = 0; i < arr[k].length; i++) {
+                for (var i = 0; i < arr[k].length; i++) {
                     tmp.push(arr[k].charAt(i));
                 }
 
-                tmp.sort(function() {
+                tmp.sort(function () {
                     return 0.5 - Math.random();
                 });
 
@@ -92,7 +92,7 @@
 
         } else {
 
-            for(var i = 0; i < str.length; i++) {
+            for (var i = 0; i < str.length; i++) {
                 arr.push(str.charAt(i));
             }
 
@@ -100,9 +100,9 @@
 
         arr = scramble(arr);
 
-        s = (sep.length > 0) ? arr.join(sep) : arr.join('');   
-                    
-        return s.toUpperCase();    
+        s = (sep.length > 0) ? arr.join(sep) : arr.join('');
+
+        return s.toUpperCase();
 
     }
 
@@ -128,6 +128,7 @@
 %%[IF @ContentJson != "True" THEN]%%
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -135,8 +136,9 @@
     <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
     <title>Example page</title>
 </head>
+
 <body>
-    
+
     <table x-data="myApp()">
         <tr>
             <th>Number</th>
@@ -163,11 +165,11 @@
                 },
                 async performRequests() {
 
-                    while(this.status != 200) {
+                    while (this.status != 200) {
 
                         let req = await this.performSingleRequest(this.reqID);
 
-                        if(req.status == 500) break;
+                        if (req.status == 500) break;
 
                         this.status = req.status;
                         this.reqID = req.reqID;
@@ -180,7 +182,7 @@
                 },
                 async performSingleRequest(reqID) {
 
-                    return await (await fetch("%%=RequestParameter('PAGEURL')=%%", { method: "POST", body: JSON.stringify({ reqID: reqID }) } )).json();
+                    return await (await fetch("%%=RequestParameter('PAGEURL')=%%", { method: "POST", body: JSON.stringify({ reqID: reqID }) })).json();
 
                 }
             }
@@ -190,5 +192,6 @@
     </script>
 
 </body>
+
 </html>
 %%[ENDIF]%%
